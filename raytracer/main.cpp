@@ -1,32 +1,40 @@
-/*
-Raylib example file.
-This is an example main file for a simple raylib project.
-Use this as a starting point or replace it with your code.
-
-For a C++ project simply rename the file to .cpp and run premake 
-
-*/
-
 #include "raylib.h"
+#include "iostream"
 
-int main ()
+const int W = 256;
+const int H = 256;
+
+void DrawPixels()
 {
-	// set up the window
-	InitWindow(1280, 800, "Hello Raylib");
-	
-	// game loop
+	for (int i = 0; i < W; i++)
+	{
+		for (int j = 0; j < H; j++)
+		{
+			float r = float(i) / (W - 1);
+			float g = float(j) / (H - 1);
+
+			Vector4 colorNormalized = {r, g, 0.0f, 1.0f};
+			Color c = ColorFromNormalized(colorNormalized);
+
+			DrawPixel(i, j, c);
+		}
+	}
+}
+
+int main()
+{
+	InitWindow(W, H, "Simple Raytracer");
+
 	while (!WindowShouldClose())
 	{
-		// drawing
 		BeginDrawing();
 		ClearBackground(BLACK);
 
-		
-		
+		DrawPixels();
+
 		EndDrawing();
 	}
 
-	// cleanup
 	CloseWindow();
 	return 0;
 }

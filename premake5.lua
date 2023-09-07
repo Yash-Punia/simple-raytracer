@@ -54,7 +54,7 @@ if (string.lower(workspaceName) == "raylib") then
 end
 
 workspace (workspaceName)
-    configurations { "Debug", "Release"}
+    configurations {"Release"}
     platforms { "x64", "x86", "ARM64"}
 	
 	defaultplatform ("x64")

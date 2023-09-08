@@ -4,6 +4,8 @@
 #include "raytracer.h"
 #include "input.h"
 #include "sphere.h"
+#include "Materials/lambertian.h"
+#include "Materials/metal.h"
 
 using namespace raytracer;
 
@@ -11,7 +13,6 @@ Vec3 **pixels;
 
 void Render();
 void InitPixels();
-void ClearPixels();
 
 int main()
 {
@@ -27,9 +28,20 @@ int main()
 	std::cout << VH << std::endl;
 
 	HittableList world;
-	world.Add(make_shared<Sphere>(Vec3(0, 0, -1), 0.5, Vec3(0.0, 0.0, 1.0)));
-	world.Add(make_shared<Sphere>(Vec3(0, -100.5, -1), 100, Vec3(0, 1, 0)));
-	world.Add(make_shared<Sphere>(Vec3(-2, -0.5, -2), 0.3));
+	// world.Add(make_shared<Sphere>(Vec3(0, 0, -1), 0.5, Vec3(0.0, 0.0, 1.0)));
+	// world.Add(make_shared<Sphere>(Vec3(0, -100.5, -1), 100, Vec3(0, 1, 0)));
+	// world.Add(make_shared<Sphere>(Vec3(-2, -0.5, -2), 0.3));
+
+    shared_ptr<raytracer::Material> GroundMat = make_shared<Lambertian>(Vec3(0.6, 0.8, 0.0));
+    shared_ptr<raytracer::Material> CenterMat = make_shared<Lambertian>(Vec3(0.7, 0.3, 0.3));
+    shared_ptr<raytracer::Material> LeftMat   = make_shared<Metal>(Vec3(0.8, 0.8, 0.8), 0.3);
+    shared_ptr<raytracer::Material> RightMat  = make_shared<Metal>(Vec3(0.8, 0.6, 0.2), 1.0);
+
+    world.Add(make_shared<Sphere>(Vec3( 0.0, -100.5, -1.0), 100.0, GroundMat));
+    world.Add(make_shared<Sphere>(Vec3( 0.0,    0.0, -1.0),   0.5, CenterMat));
+    world.Add(make_shared<Sphere>(Vec3(-1.0,    0.0, -1.0),   0.5, LeftMat));
+    world.Add(make_shared<Sphere>(Vec3( 1.0,    0.0, -1.0),   0.5, RightMat));
+
 
 	while (!WindowShouldClose())
 	{
@@ -40,7 +52,7 @@ int main()
 		input.Up = IsKeyDown(KEY_UP);
 		input.Down = IsKeyDown(KEY_DOWN);
 
-		rt.Update(input);
+		// rt.Update(input);
 
 		// Render
 		BeginDrawing();

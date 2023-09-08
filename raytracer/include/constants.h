@@ -7,6 +7,7 @@
 #include <random>
 #include "vec3.h"
 #include "ray.h"
+#include "interval.h"
 
 using std::make_shared;
 using std::shared_ptr;
@@ -28,7 +29,6 @@ inline double random()
 
 inline double random(double min, double max)
 {
-    // Returns a random real in [min,max).
     return min + (max - min) * random();
 }
 
@@ -60,6 +60,11 @@ namespace raytracer
     static Vec3 Random(Vec3 min, Vec3 max)
     {
         return Vec3(random(min.x(), max.x()), random(min.y(), max.y()), random(min.z(), max.z()));
+    }
+
+    static Vec3 Reflect(const Vec3 &v, const Vec3 &n)
+    {
+        return v - 2*Dot(v,n)*n;
     }
 
     inline Vec3 RandomInUnitSphere()

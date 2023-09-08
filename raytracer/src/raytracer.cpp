@@ -2,13 +2,14 @@
 #include "raytracer.h"
 #include "constants.h"
 #include "sphere.h"
+#include "Materials/material.h"
 
 namespace raytracer
 {
     Raytracer::Raytracer()
     {
         LightSource = Vec3(0, 0, 0);
-        SamplesPerPixel = 100;
+        SamplesPerPixel = 500;
         MaxDepth = 10;
     }
 
@@ -20,8 +21,11 @@ namespace raytracer
         HitInfo hitInfo;
         if (world.Hit(ray, Interval(0.001, INFINITY), hitInfo))
         {
-            auto direction = hitInfo.normal + RandomUnitVector();
-            return 0.5 * RayColor(world, Ray(hitInfo.point, direction), depth-1);
+            Vec3 attenuation;
+            Ray scatteredRay;
+            if (hitInfo.mat->Scatter(ray, hitInfo, attenuation, scatteredRay));
+                return attenuation * RayColor(world, Ray(hitInfo.point, scatteredRay.Direction()), depth-1);
+            return Vec3(0,0,0);
         }
 
         Vec3 unitDirection = UnitVector(ray.Direction());

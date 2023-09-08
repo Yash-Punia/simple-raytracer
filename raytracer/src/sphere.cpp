@@ -1,4 +1,6 @@
 #include "sphere.h"
+#include "constants.h"
+#include "hittable.h"
 
 namespace raytracer
 {
@@ -31,6 +33,7 @@ namespace raytracer
             hitInfo.point = r.At(t);
             Vec3 outwardNormal = hitInfo.point - center;
             hitInfo.SetFaceNormal(r, outwardNormal);
+            hitInfo.mat = mat;
 
             return true;
         }

@@ -31,9 +31,15 @@ namespace raytracer
         float x() const { return v[0]; }
         float y() const { return v[1]; }
         float z() const { return v[2]; }
+
+        bool NearZero() const
+        {
+            auto s = 1e-8;
+            return (fabs(v[0]) < s) && (fabs(v[1]) < s) && (fabs(v[2]) < s);
+        }
     };
 
-    #pragma region Math Operations
+#pragma region Math Operations
 
     inline Vec3 operator+(const Vec3 &u, const Vec3 &v)
     {
@@ -50,6 +56,11 @@ namespace raytracer
         return Vec3(-v.x(), -v.y(), -v.z());
     }
 
+    inline Vec3 operator*(const Vec3 &u, const Vec3 &v)
+    {
+        return Vec3(u.x() * v.x(), u.y() * v.y(), u.z() * v.z());
+    }
+
     inline Vec3 operator*(const Vec3 &v, const float scale)
     {
         return Vec3(v.x() * scale, v.y() * scale, v.z() * scale);
@@ -59,7 +70,7 @@ namespace raytracer
     {
         return v * scale;
     }
-    
+
     inline Vec3 operator/(const Vec3 &v, const float scale)
     {
         return Vec3(v.x() / scale, v.y() / scale, v.z() / scale);
@@ -90,7 +101,7 @@ namespace raytracer
         return u.x() * v.x() + u.y() * v.y() + u.z() * v.z();
     }
 
-    #pragma endregion
+#pragma endregion
 
 } // namespace raytracer
 

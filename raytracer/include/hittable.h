@@ -2,15 +2,17 @@
 #define HITTABLE
 
 #include "constants.h"
-#include "interval.h"
 
 namespace raytracer
 {
-    struct HitInfo 
+    class Material;
+    class HitInfo
     {
+    public:
         Vec3 point;
         Vec3 normal;
         bool frontFace;
+        shared_ptr<raytracer::Material> mat;
         double t;
 
         void SetFaceNormal(const Ray &r, Vec3 outwardNormal)

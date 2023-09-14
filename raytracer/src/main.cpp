@@ -6,6 +6,7 @@
 #include "sphere.h"
 #include "Materials/lambertian.h"
 #include "Materials/metal.h"
+#include "Materials/dielectric.h"
 
 using namespace raytracer;
 
@@ -13,6 +14,8 @@ Vec3 **pixels;
 
 void Render();
 void InitPixels();
+Vec3 GetRandomPosition();
+shared_ptr<raytracer::Material> GetRandomMaterial();
 
 int main()
 {
@@ -32,16 +35,48 @@ int main()
 	// world.Add(make_shared<Sphere>(Vec3(0, -100.5, -1), 100, Vec3(0, 1, 0)));
 	// world.Add(make_shared<Sphere>(Vec3(-2, -0.5, -2), 0.3));
 
-    shared_ptr<raytracer::Material> GroundMat = make_shared<Lambertian>(Vec3(0.6, 0.8, 0.0));
-    shared_ptr<raytracer::Material> CenterMat = make_shared<Lambertian>(Vec3(0.7, 0.3, 0.3));
-    shared_ptr<raytracer::Material> LeftMat   = make_shared<Metal>(Vec3(0.8, 0.8, 0.8), 0.3);
-    shared_ptr<raytracer::Material> RightMat  = make_shared<Metal>(Vec3(0.8, 0.6, 0.2), 1.0);
+	// DIELECTRIC TESTING
+	
+    // shared_ptr<raytracer::Material> GroundMat = make_shared<Lambertian>(Vec3(0.6, 0.8, 0.0));
+    // shared_ptr<raytracer::Material> CenterMat = make_shared<Lambertian>(Vec3(0.1, 0.2, 0.5));
+    // shared_ptr<raytracer::Material> LeftMat   = make_shared<Dielectric>(10);
+    // shared_ptr<raytracer::Material> RightMat  = make_shared<Metal>(Vec3(0.8, 0.6, 0.2), 0.0);
 
-    world.Add(make_shared<Sphere>(Vec3( 0.0, -100.5, -1.0), 100.0, GroundMat));
-    world.Add(make_shared<Sphere>(Vec3( 0.0,    0.0, -1.0),   0.5, CenterMat));
-    world.Add(make_shared<Sphere>(Vec3(-1.0,    0.0, -1.0),   0.5, LeftMat));
-    world.Add(make_shared<Sphere>(Vec3( 1.0,    0.0, -1.0),   0.5, RightMat));
+    // world.Add(make_shared<Sphere>(Vec3( 0.0, -100.5, -1.0), 100.0, GroundMat));
+    // world.Add(make_shared<Sphere>(Vec3( 0.0,    0.0, -1.0),   0.5, CenterMat));
+    // world.Add(make_shared<Sphere>(Vec3(-1.0,    0.0, -1.0),   0.5, LeftMat));
+    // world.Add(make_shared<Sphere>(Vec3( 1.0,    0.0, -1.0),   0.5, RightMat));
 
+	// FOV TESTING
+	// auto R = cos(PI/4);
+
+    // auto material_left  = make_shared<Lambertian>(Vec3(0,0,1));
+    // auto material_right = make_shared<Lambertian>(Vec3(1,0,0));
+
+    // world.Add(make_shared<Sphere>(Vec3(-R, 0, -1), R, material_left));
+    // world.Add(make_shared<Sphere>(Vec3( R, 0, -1), R, material_right));
+
+	// CAM POSITIONING
+	auto material_ground = make_shared<Lambertian>(Vec3(0.8, 0.8, 0.0));
+    // auto material_center = make_shared<Lambertian>(Vec3(1, 0.2, 0.5));
+    // auto material_left   = make_shared<Dielectric>(5);
+    // auto material_right  = make_shared<Metal>(Vec3(0.8, 0.6, 0.2), 0.0);
+
+    // world.Add(make_shared<Sphere>(Vec3( 0.0, -100.5, -1.0), 100.0, material_ground));
+    // world.Add(make_shared<Sphere>(Vec3( 0.0,    0.0, -1.0),   0.5, material_center));
+    // world.Add(make_shared<Sphere>(Vec3(-1.0,    0.0, -1.0),   0.5, material_left));
+    // world.Add(make_shared<Sphere>(Vec3(-1.0,    0.0, -1.0),  0.4, material_left));
+    // world.Add(make_shared<Sphere>(Vec3( 1.0,    0.0, -1.0),   0.5, material_right));
+
+	// RANDOMIZED!!
+	auto totalBalls = 10;
+
+	world.Add(make_shared<Sphere>(Vec3( 0.0, -100.5, -1.0), 100.0, material_ground));
+
+	for (int i=0; i<totalBalls; i++)
+	{
+		world.Add(make_shared<Sphere>(GetRandomPosition(), 0.5, GetRandomMaterial()));
+	}
 
 	while (!WindowShouldClose())
 	{
@@ -98,4 +133,23 @@ void Render()
 			DrawPixel(j, i, c);
 		}
 	}
+}
+
+shared_ptr<raytracer::Material> GetRandomMaterial()
+{
+	auto randValue = random();
+
+	// Lambertian
+	if (randValue < 0.3)
+		return make_shared<Lambertian>(Vec3(random(), random(), random()));
+
+	if (randValue < 0.6)
+		return make_shared<Metal>(Vec3(random(), random(), random()), 0.3);
+
+	return make_shared<Dielectric>(random(2, 5));
+}
+
+Vec3 GetRandomPosition()
+{
+	return Vec3(random(-3,2), 0, random(-3,2));
 }

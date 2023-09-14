@@ -38,12 +38,22 @@ namespace raytracer
     const int W = 960;
     const int H = static_cast<int>(W / ASPECT_RATIO) < 1 ? 1 : static_cast<int>(W / ASPECT_RATIO);
 
-    const float VH = 2.0;
-    const float VW = VH * (static_cast<float>(W) / H);
-
     // Camera Constants
-    const Vec3 CAMERA_CENTER = Vec3(0, 0, 0);
-    const float FOCAL_LENGTH = 1.0;
+    const Vec3 LOOK_FROM = Vec3(0,1,1);
+    const Vec3 LOOK_AT = Vec3(0,0,-1);
+    const Vec3 CAMERA_CENTER = LOOK_FROM;
+    const Vec3 V_UP = Vec3(0,1,0);
+    const float FOCAL_LENGTH = Magnitude(LOOK_FROM - LOOK_AT);
+    const float V_FOV = 60;
+    const Vec3 W_VECTOR = UnitVector(LOOK_FROM - LOOK_AT);
+    const Vec3 U_VECTOR = UnitVector(Cross(V_UP, W_VECTOR));
+    const Vec3 V_VECTOR = Cross(W_VECTOR, U_VECTOR);
+
+    const float THETA = degrees_to_radians(V_FOV);
+    const float HEIGHT = tan(THETA/2);
+
+    const float VH = 2 * HEIGHT * FOCAL_LENGTH;
+    const float VW = VH * (static_cast<float>(W) / H);
 
     // Vec3 Utils
 
@@ -65,6 +75,14 @@ namespace raytracer
     static Vec3 Reflect(const Vec3 &v, const Vec3 &n)
     {
         return v - 2*Dot(v,n)*n;
+    }
+
+    static Vec3 Refract(const Vec3 &v, const Vec3 &n, float ratio)
+    {
+        auto cosTheta = fmin(Dot(-v, n), 1.0);
+        Vec3 rOutPerp =  ratio * (v + cosTheta*n);
+        Vec3 rOutParallel = -sqrt(fabs(1.0 - Dot(rOutPerp, rOutPerp))) * n;
+        return rOutPerp + rOutParallel;
     }
 
     inline Vec3 RandomInUnitSphere()

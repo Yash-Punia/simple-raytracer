@@ -9,8 +9,8 @@ namespace raytracer
     Raytracer::Raytracer()
     {
         LightSource = Vec3(0, 0, 0);
-        SamplesPerPixel = 500;
-        MaxDepth = 10;
+        SamplesPerPixel = 16;
+        MaxDepth = 20;
     }
 
     Vec3 Raytracer::RayColor(const Hittable &world, const Ray &ray, int depth)
@@ -29,7 +29,7 @@ namespace raytracer
         }
 
         Vec3 unitDirection = UnitVector(ray.Direction());
-        float a = 0.5 * (ray.Direction().y() + 1.0);
+        float a = 0.5 * (unitDirection.y() + 1.0);
         return (1 - a) * Vec3(1, 1, 1) + a * Vec3(0.5, 0.7, 1.0);
     }
 
@@ -48,13 +48,13 @@ namespace raytracer
 
     void Raytracer::Process(const Hittable &world, Vec3 **pixels)
     {
-        Vec3 viewportU = Vec3(VW, 0, 0);
-        Vec3 viewportV = Vec3(0, -VH, 0);
+        Vec3 viewportU = VW * U_VECTOR;
+        Vec3 viewportV = VH * -V_VECTOR;
 
         Vec3 pixelDeltaU = viewportU / W;
         Vec3 pixelDeltaV = viewportV / H;
 
-        auto viewport_upper_left = CAMERA_CENTER - Vec3(0, 0, FOCAL_LENGTH) - viewportU / 2 - viewportV / 2;
+        auto viewport_upper_left = CAMERA_CENTER - (FOCAL_LENGTH * W_VECTOR) - viewportU / 2 - viewportV / 2;
         auto p = viewport_upper_left + 0.5 * (pixelDeltaU + pixelDeltaV);
 
         for (int j = 0; j < H; j++)
@@ -65,7 +65,16 @@ namespace raytracer
                 for (int sample = 0; sample < SamplesPerPixel; sample++)
                 {
                     Ray r = GetRay(j, i, p, pixelDeltaU, pixelDeltaV);
-                    newColor = newColor + RayColor(world, r, MaxDepth);
+                    auto color = RayColor(world, r, MaxDepth);
+                    color = color + RayColor(world, r, MaxDepth);
+                    color = color + RayColor(world, r, MaxDepth);
+                    color = color + RayColor(world, r, MaxDepth);
+                    color = color + RayColor(world, r, MaxDepth);
+                    color = color + RayColor(world, r, MaxDepth);
+                    color = color + RayColor(world, r, MaxDepth);
+                    color = color + RayColor(world, r, MaxDepth);
+                    newColor = newColor + color / 8.0;
+                    // newColor = newColor + RayColor(world, r, MaxDepth);
                 }
                 newColor = newColor / (float) SamplesPerPixel;
                 newColor = Vec3(sqrt(newColor.x()), sqrt(newColor.y()), sqrt(newColor.z()));

@@ -9,8 +9,8 @@ namespace raytracer
     Raytracer::Raytracer()
     {
         LightSource = Vec3(0, 0, 0);
-        SamplesPerPixel = 16;
-        MaxDepth = 20;
+        SamplesPerPixel = 8;
+        MaxDepth = 10;
     }
 
     Vec3 Raytracer::RayColor(const Hittable &world, const Ray &ray, int depth)
@@ -54,7 +54,7 @@ namespace raytracer
         Vec3 pixelDeltaU = viewportU / W;
         Vec3 pixelDeltaV = viewportV / H;
 
-        auto viewport_upper_left = CAMERA_CENTER - (FOCAL_LENGTH * W_VECTOR) - viewportU / 2 - viewportV / 2;
+        auto viewport_upper_left = CAMERA_CENTER - (FOCUS_DISTANCE * W_VECTOR) - viewportU / 2 - viewportV / 2;
         auto p = viewport_upper_left + 0.5 * (pixelDeltaU + pixelDeltaV);
 
         for (int j = 0; j < H; j++)
@@ -88,7 +88,7 @@ namespace raytracer
         auto pixelCenter = p + (pixelDeltaU * col) + (pixelDeltaV * row);
         auto pixelSample = pixelCenter + PixelSampleSquare(pixelDeltaU, pixelDeltaV);
 
-        auto origin = CAMERA_CENTER;
+        auto origin = (DEFOCUS_ANGLE <= 0) ? CAMERA_CENTER : DefocusDiskSample();
         auto direction = pixelSample - origin;
 
         return Ray(origin, direction);
@@ -99,6 +99,12 @@ namespace raytracer
         auto px = -0.5 + random();
         auto py = -0.5 + random();
         return (px * pixelDeltaU) + (py * pixelDeltaV);
+    }
+
+    Vec3 Raytracer::DefocusDiskSample()
+    {
+        auto p = RandomInUnitDisk();
+        return CAMERA_CENTER + (p.x() * DEFOCUS_U) + (p.y()*DEFOCUS_V);
     }
 
 } // namespace raytracer

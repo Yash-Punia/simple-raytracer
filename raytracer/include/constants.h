@@ -43,7 +43,6 @@ namespace raytracer
     const Vec3 LOOK_AT = Vec3(0,0,-1);
     const Vec3 CAMERA_CENTER = LOOK_FROM;
     const Vec3 V_UP = Vec3(0,1,0);
-    const float FOCAL_LENGTH = Magnitude(LOOK_FROM - LOOK_AT);
     const float V_FOV = 60;
     const Vec3 W_VECTOR = UnitVector(LOOK_FROM - LOOK_AT);
     const Vec3 U_VECTOR = UnitVector(Cross(V_UP, W_VECTOR));
@@ -52,7 +51,13 @@ namespace raytracer
     const float THETA = degrees_to_radians(V_FOV);
     const float HEIGHT = tan(THETA/2);
 
-    const float VH = 2 * HEIGHT * FOCAL_LENGTH;
+    const float DEFOCUS_ANGLE = 10.0; // Variation angle of rays through each pixel
+    const float FOCUS_DISTANCE = 2;
+    const float DEFOCUS_RADIUS = FOCUS_DISTANCE * tan(degrees_to_radians(DEFOCUS_ANGLE) / 2);
+    const Vec3 DEFOCUS_U = U_VECTOR * DEFOCUS_RADIUS;
+    const Vec3 DEFOCUS_V = V_VECTOR * DEFOCUS_RADIUS;
+
+    const float VH = 2 * HEIGHT * FOCUS_DISTANCE;
     const float VW = VH * (static_cast<float>(W) / H);
 
     // Vec3 Utils
@@ -91,6 +96,16 @@ namespace raytracer
         {
             Vec3 p = Random(-1, 1);
             if (Dot(p, p) < 1)
+                return p;
+        }
+    }
+
+    inline Vec3 RandomInUnitDisk()
+    {
+        while (true)
+        {
+            Vec3 p = Vec3(random(-1,1), random(-1,1), 0);
+            if (Dot(p,p) < 1)
                 return p;
         }
     }

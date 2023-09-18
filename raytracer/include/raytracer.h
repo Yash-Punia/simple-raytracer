@@ -17,6 +17,7 @@ namespace raytracer
         Vec3 RayColor(const Hittable &world, const Ray &, int depth);
         Vec3 PixelSampleSquare(const Vec3 &pixelDeltaU, const Vec3 &pixelDeltaV) const;
         Ray GetRay(const int &row, const int &col, Vec3 p, Vec3 pixelDeltaU, Vec3 pixelDeltaV);
+        Vec3 DefocusDiskSample();
         void ProcessAntiAliasing(Vec3 **pixels);
 
         Vec3 LightSource;

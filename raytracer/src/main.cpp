@@ -11,6 +11,7 @@
 using namespace raytracer;
 
 Vec3 **pixels;
+Vec3 **renderPixels;
 
 void Render();
 void InitPixels();
@@ -24,11 +25,6 @@ int main()
 	Raytracer rt;
 	Input input;
 	InitPixels();
-
-	std::cout << W << std::endl;
-	std::cout << H << std::endl;
-	std::cout << VW << std::endl;
-	std::cout << VH << std::endl;
 
 	HittableList world;
 	// world.Add(make_shared<Sphere>(Vec3(0, 0, -1), 0.5, Vec3(0.0, 0.0, 1.0)));
@@ -69,25 +65,27 @@ int main()
     // world.Add(make_shared<Sphere>(Vec3( 1.0,    0.0, -1.0),   0.5, material_right));
 
 	// RANDOMIZED!!
-	auto totalBalls = 10;
+	auto totalBalls = 5;
 
 	world.Add(make_shared<Sphere>(Vec3( 0.0, -100.5, -1.0), 100.0, material_ground));
 
 	for (int i=0; i<totalBalls; i++)
 	{
-		world.Add(make_shared<Sphere>(GetRandomPosition(), 0.5, GetRandomMaterial()));
+		world.Add(make_shared<Sphere>(GetRandomPosition(), 0.4, GetRandomMaterial()));
 	}
 
 	while (!WindowShouldClose())
 	{
 		// Update
 
-		input.Right = IsKeyDown(KEY_RIGHT);
-		input.Left = IsKeyDown(KEY_LEFT);
-		input.Up = IsKeyDown(KEY_UP);
-		input.Down = IsKeyDown(KEY_DOWN);
+		input.Right = IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D);
+		input.Left = IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A);
+		input.Up = IsKeyDown(KEY_UP) || IsKeyDown(KEY_W);
+		input.Down = IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S);
 
-		// rt.Update(input);
+		auto mousePos = GetMousePosition();
+
+		rt.Update(input);
 
 		// Render
 		BeginDrawing();
@@ -146,10 +144,10 @@ shared_ptr<raytracer::Material> GetRandomMaterial()
 	if (randValue < 0.6)
 		return make_shared<Metal>(Vec3(random(), random(), random()), 0.3);
 
-	return make_shared<Dielectric>(random(2, 5));
+	return make_shared<Dielectric>(random(1, 3));
 }
 
 Vec3 GetRandomPosition()
 {
-	return Vec3(random(-3,2), 0, random(-3,2));
+	return Vec3(random(-1,1), 0, random(-4,-1));
 }
